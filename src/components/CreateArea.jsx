@@ -1,48 +1,66 @@
 import React, { useState } from "react";
+import AddIcon from "@material-ui/icons/Add";
+import Fab from "@material-ui/core/Fab";
+import Zoom from "@material-ui/core/Zoom";
 
 function CreateArea(props) {
-  const [note, setNote] = useState({ title: "", content: "" });
+  const [isExpand, setisExpans] = useState(false);
+  const [note, setNote] = useState({
+    title: "",
+    content: "",
+  });
 
-  function HandleTitleChange(e) {
-    const newInput = e.target.value;
-    setNote({ title: newInput });
-  }
+  function handleChange(event) {
+    const { name, value } = event.target;
 
-  function HandleContentChange(e) {
-    const newInput = e.target.value;
-    setNote((preValues) => {
+    setNote((prevNote) => {
       return {
-        title: preValues.title,
-        content: newInput,
+        ...prevNote,
+        [name]: value,
       };
     });
   }
 
-  function submitNote(e) {
+  function submitNote(event) {
     props.onAdd(note);
-    setNote({ title: "", content: "" });
-    e.preventDefault();
+    setNote({
+      title: "",
+      content: "",
+    });
+    event.preventDefault();
   }
 
   return (
     <div>
-      <form>
-        <input
-          onChange={HandleTitleChange}
-          value={note.title}
-          name="title"
-          placeholder="Title"
-        />
+      <form className="create-note">
+        {isExpand ? (
+          <input
+            name="title"
+            onChange={handleChange}
+            value={note.title}
+            placeholder="Title"
+          />
+        ) : null}
+
         <textarea
-          value={note.content}
-          onChange={HandleContentChange}
+          onClick={() => {
+            setisExpans(true);
+          }}
           name="content"
+          onChange={handleChange}
+          value={note.content}
           placeholder="Take a note..."
-          rows="3"
-        />{" "}
-        <button onClick={submitNote}>Add</button>{" "}
-      </form>{" "}
+          rows={isExpand ? "3" : "1"}
+        />
+
+        <Zoom in={isExpand ? true : false}>
+          <Fab onClick={submitNote}>
+            <AddIcon />
+          </Fab>
+        </Zoom>
+      </form>
     </div>
   );
 }
+
 export default CreateArea;
